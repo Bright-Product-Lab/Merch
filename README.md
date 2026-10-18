@@ -13,7 +13,7 @@ Upload `index.html` and `reel-bin-app.html` together to any static host (GitHub 
 - `source/support.js`, `source/assets/` – runtime and images (`tape-mark.png` is the logo)
 
 ## Routes
-`#/` home, `#/reels`, `#/app`, `#/training`, `#/book`, `#/merch`, `#/clips/<link-name>` customer clip gallery, `#admin` backend (6-digit code).
+`#/` home, `#/reels`, `#/app`, `#/training`, `#/book`, `#/merch`, `#/clips/<link-name>` customer clip gallery (Backend → Clips, batch upload + QR), `#admin` backend (6-digit code).
 
 ## Notes
 - Backend code is casual protection only, not server security.
