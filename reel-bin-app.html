@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reel Bin Clip Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04070e;--surface:#0b1220;--surface2:#111a2d;--line:rgba(159,196,255,.28);--text:#e9f0fa;--muted:rgba(233,240,250,.66);--acc:#ec3013;--acc-h:#ff4a2e;--on:#fff;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#ff7a63;text-underline-offset:3px}a:hover{color:var(--acc-h)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+::selection{background:rgba(236,48,19,.35)}
+button,input,select,textarea{font:inherit;color:inherit;border-radius:0}
+#app{max-width:1100px;margin:0 auto;padding:0 20px 80px}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:2px solid var(--line);flex-wrap:wrap}
+.mark{width:36px;height:36px;background:var(--acc);display:grid;place-items:center;font-weight:800;letter-spacing:-.04em}
+.bar b{font-weight:800;font-size:18px;letter-spacing:-.015em}
+.bar .sp{flex:1}
+.bar a.book{background:var(--acc);color:var(--on);text-decoration:none;font-weight:800;font-size:14px;padding:9px 14px}
+.bar a.book:hover{background:var(--acc-h);color:var(--on)}
+h1{margin:clamp(28px,5vw,56px) 0 6px;font-weight:800;font-size:clamp(40px,9vw,104px);line-height:.88;letter-spacing:-.04em;text-transform:uppercase}
+.lede{margin:0 0 28px;color:var(--muted);max-width:56ch}
+.k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border-top:2px solid var(--line);border-left:2px solid var(--line);margin-bottom:28px}
+.step{padding:16px 18px;border-right:2px solid var(--line);border-bottom:2px solid var(--line)}
+.step.on{background:var(--surface2)}
+.step b{display:block;font-weight:800;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));border-top:2px solid var(--line);border-left:2px solid var(--line)}
+.panel{padding:clamp(16px,3vw,24px);border-right:2px solid var(--line);border-bottom:2px solid var(--line);background:var(--surface);min-width:0}
+.panel.full{grid-column:1/-1}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ph .k{flex:1}
+.ph h2{margin:0;font-weight:800;font-size:clamp(20px,3vw,26px);letter-spacing:-.015em;flex:1}
+input[type=text],input[type=email],select,textarea{width:100%;min-height:42px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);caret-color:var(--acc)}
+textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border:1px solid var(--line);background:transparent;cursor:pointer;font-weight:800;font-size:14px;white-space:nowrap}
+.btn:hover{background:rgba(159,196,255,.1)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:var(--on)}
+.btn.p:hover{background:var(--acc-h)}
+.btn.sm{min-height:34px;padding:0 10px;font-size:13px}
+.btn.ic{width:34px;min-height:34px;padding:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:36px;padding:0 12px;border:1px solid var(--line);background:transparent;cursor:pointer;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--on)}
+.sw{width:12px;height:12px;border:1px solid rgba(255,255,255,.5);flex-shrink:0}
+.colors{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0}
+.colors label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+input[type=color]{width:38px;height:30px;padding:0;border:1px solid var(--line);background:none;cursor:pointer}
+.pl{display:grid;grid-template-columns:44px 1fr 70px 34px;gap:6px;align-items:center;margin-bottom:6px}
+.badge{height:34px;display:grid;place-items:center;font-weight:800;font-size:13px;border:1px solid var(--line)}
+.drop{display:block;border:2px dashed var(--line);padding:22px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:12px}
+.drop.over{border-color:var(--acc);color:var(--text);background:rgba(236,48,19,.08)}
+.clips{display:flex;flex-direction:column;max-height:230px;overflow:auto;border:1px solid var(--line)}
+.clip{display:flex;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px}
+.clip:last-child{border-bottom:0}
+.clip.on{background:var(--surface2);box-shadow:inset 3px 0 var(--acc)}
+.clip span.n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+video{width:100%;max-height:52vh;background:#000;display:block}
+.scrub{position:relative;height:30px;margin:10px 0 2px;cursor:pointer;touch-action:none}
+.scrub i{position:absolute;left:0;right:0;top:13px;height:4px;background:var(--line)}
+.scrub .f{position:absolute;left:0;top:13px;height:4px;background:var(--acc)}
+.scrub .m{position:absolute;top:8px;height:14px;background:rgba(236,48,19,.5)}
+.scrub .h{position:absolute;top:4px;width:3px;height:22px;background:var(--text);margin-left:-1px}
+.tc{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 8px;border-bottom:2px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tw{overflow-x:auto}
+.empty{color:var(--muted);padding:14px 0;font-size:14px}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.55 ui-monospace,Menlo,monospace;max-height:420px;overflow:auto;background:var(--bg);border:1px solid var(--line);padding:14px}
+.promo{border:2px solid var(--acc);padding:clamp(16px,3vw,24px);background:rgba(236,48,19,.1);display:flex;flex-direction:column;gap:10px}
+.promo .code{font-weight:800;font-size:clamp(28px,6vw,48px);letter-spacing:-.02em}
+.cta{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));border-top:2px solid var(--line);border-left:2px solid var(--line);margin-top:28px}
+.cta>div{padding:clamp(18px,3vw,28px);border-right:2px solid var(--line);border-bottom:2px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.cta h3{margin:0;font-weight:800;font-size:clamp(22px,3.4vw,30px);line-height:1.05;letter-spacing:-.015em}
+.cta p{margin:0;color:var(--muted);font-size:14px}
+.note{font-size:12px;color:var(--muted)}
+[hidden]{display:none!important}
+@media(max-width:560px){#app{padding:0 14px 60px}.pl{grid-template-columns:40px 1fr 56px 34px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <span class="mark">RB</span><b>Reel Bin</b><span class="k">Clip Maker</span>
+    <span class="sp"></span>
+    <a class="book" id="topBook" href="#" target="_blank" rel="noopener">Book a reel</a>
+  </div>
+
+  <h1>Clip Maker</h1>
+  <p class="lede">Log your team, drop in your game footage, mark the plays. Download a script (PRD) for an AI video generator. Free. Your video never leaves your device.</p>
+
+  <div class="steps">
+    <div class="step on"><span class="k">1</span><b>Team</b><span class="note">Name, jersey color, roster</span></div>
+    <div class="step"><span class="k">2</span><b>Clips</b><span class="note">Drag in files, mark plays</span></div>
+    <div class="step"><span class="k">3</span><b>Script</b><span class="note">Download the PRD</span></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="ph"><span class="k">1 · Team</span><button class="btn sm ic" id="addTeam" title="New team" aria-label="New team">+</button></div>
+      <select id="teamSel" aria-label="Team"></select>
+      <div style="height:8px"></div>
+      <input type="text" id="tName" placeholder="Team name">
+      <div style="height:8px"></div>
+      <input type="text" id="tSchool" placeholder="School or league (optional)">
+      <div class="colors">
+        <label><input type="color" id="cHome" value="#1d3b6b">Home jersey</label>
+        <label><input type="color" id="cAway" value="#ffffff">Away jersey</label>
+      </div>
+      <div class="ph" style="margin-top:6px"><span class="k">Roster</span><button class="btn sm ic" id="addPl" title="Add player" aria-label="Add player">+</button></div>
+      <div id="roster"></div>
+      <div class="note">Press 1–9 while marking to pick a player. Teams save on this device, so switch teams for each of your kids.</div>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><span class="k">2 · Clips</span></div>
+      <label class="drop" id="drop" for="file">Drag video files here, or tap to choose from phone, computer, or cloud drive</label>
+      <input type="file" id="file" accept="video/*" multiple hidden>
+      <div class="clips" id="clipList"></div>
+      <div class="note" style="margin-top:8px">Files play from your device. Nothing is uploaded.</div>
+    </section>
+
+    <section class="panel full">
+      <div class="ph"><h2 id="clipTitle">No clip loaded</h2></div>
+      <video id="v" controls playsinline preload="metadata"></video>
+      <div class="scrub" id="scrub"><i></i><div class="f" id="sf"></div><div id="sm"></div><div class="h" id="sh"></div></div>
+      <div class="tc"><span id="tcC">0:00.00</span><span id="tcD">0:00.00</span></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="play">Play</button>
+        <button class="btn ic" id="back" title="Back one frame (←)">‹</button>
+        <button class="btn ic" id="fwd" title="Forward one frame (→)">›</button>
+        <select id="speed" style="width:auto" aria-label="Speed"><option value=".25">0.25x</option><option value=".5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option></select>
+        <span style="flex:1"></span>
+        <button class="btn" id="setIn">Set in (I)</button>
+        <button class="btn" id="setOut">Set out (O)</button>
+      </div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+        <div class="note">In <b id="pIn">–</b> · Out <b id="pOut">–</b></div>
+        <div><div class="k" style="margin-bottom:6px">Player</div><div class="chips" id="plChips"></div></div>
+        <div><div class="k" style="margin-bottom:6px">Moment</div><div class="chips" id="momChips"></div></div>
+        <div><div class="k" style="margin-bottom:6px">Framing</div><div class="chips" id="zoomChips"></div></div>
+        <input type="text" id="note" placeholder="Optional note (e.g. and-1, steal, pick six)">
+        <div><button class="btn p" id="addMark">Add mark</button></div>
+        <div class="note" id="msg"></div>
+      </div>
+    </section>
+
+    <section class="panel full">
+      <div class="ph"><span class="k">Marks (<span id="mc">0</span>)</span>
+        <button class="btn sm" id="expJson">Save marks</button>
+        <label class="btn sm" for="impJson">Load marks</label><input type="file" id="impJson" accept=".json" hidden></div>
+      <div class="tw"><table><thead><tr><th>Clip</th><th>In</th><th>Out</th><th>Player</th><th>Moment</th><th>Framing</th><th>Note</th><th></th></tr></thead><tbody id="mb"></tbody></table></div>
+      <div class="empty" id="mEmpty">No marks yet. Load a clip, set in and out, add a mark.</div>
+    </section>
+
+    <section class="panel full">
+      <div class="ph"><span class="k">3 · Script</span></div>
+      <div class="grid" style="border:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px 20px;margin-bottom:16px">
+        <div><div class="k" style="margin-bottom:6px">Reel type</div><select id="rType"><option>Recruiting Reel</option><option>Mixtape</option><option>Hype Video</option></select></div>
+        <div><div class="k" style="margin-bottom:6px">Sport</div><select id="rSport"><option>Basketball</option><option>Football</option></select></div>
+        <div><div class="k" style="margin-bottom:6px">Music</div><select id="rMusic"><option>Hype</option><option>Cinematic</option><option>Natural sound</option><option>Surprise me</option></select></div>
+      </div>
+      <div class="row" style="margin-bottom:12px">
+        <button class="btn p" id="genPrd">Download PRD script</button>
+        <button class="btn" id="copyPrd">Copy script</button>
+      </div>
+      <pre id="prdBox" hidden></pre>
+      <div class="note" id="prdMsg" style="margin-top:8px">Paste the script into your AI video generator. It lists every clip, timestamp, player, and style choice.</div>
+    </section>
+  </div>
+
+  <div class="promo" id="promo" style="margin-top:28px" hidden>
+    <span class="k">Unlocked · your first PRD</span>
+    <div class="code" id="promoCode">REELBIN10</div>
+    <div>10% off your first Reel Bin booking. Enter it in the booking form.</div>
+    <div class="row"><a class="btn p" id="promoBook" href="#" target="_blank" rel="noopener" style="text-decoration:none">Book with my code</a><button class="btn" id="copyCode">Copy code</button></div>
+  </div>
+
+  <div class="cta">
+    <div>
+      <span class="k">Skip the AI</span>
+      <h3>Want it shot and cut by a pro?</h3>
+      <p>Reel Bin films your game on a high-end camera and delivers a finished, share-ready reel. Your marks and roster make the brief for me.</p>
+      <div class="row"><a class="btn p" id="ctaBook" href="#" target="_blank" rel="noopener" style="text-decoration:none">Book a reel</a></div>
+    </div>
+    <div>
+      <span class="k">Coming soon</span>
+      <h3>Player App waitlist</h3>
+      <p>Solo coaching to advance your game, recover, and stay disciplined. Get a note when it opens.</p>
+      <form id="wl" class="row" style="flex-wrap:nowrap">
+        <input type="email" id="wlEmail" placeholder="Email" required aria-label="Email" style="flex:1;min-width:0">
+        <button class="btn p" type="submit">Join</button>
+      </form>
+      <div class="note" id="wlMsg"></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:28px">Reel Bin · Cypress and Katy youth sports</p>
+</div>
+
+<script>
+// ---- Edit these three lines before you host on Vercel ----
+const SITE_URL = 'https://YOUR-SITE.vercel.app';   // your Grind Lab site
+const PROMO_CODE = 'REELBIN10';                      // must also exist in your site's Backend > Codes
+const WAITLIST_ENDPOINT = '';                        // optional Formspree URL; blank saves on this device only
+// ----------------------------------------------------------
+const BOOK_URL = SITE_URL + '/#/book';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const MOMENTS = {Basketball:['Score','Defense / steal','Assist','Rebound','Hustle play','Celebration'], Football:['Touchdown','Catch','Run','Tackle / sack','Interception','Block','Celebration']};
+const ZOOMS = ['Full','Zoom left','Zoom center','Zoom right','Tight'];
+const v = $('v');
+let teams = [], teamId = null, clips = [], clipId = null, pIn = null, pOut = null, selP = '', selM = '', selZ = 'Full';
+
+['topBook','ctaBook'].forEach(i => $(i).href = BOOK_URL);
+$('promoBook').href = BOOK_URL + '?code=' + PROMO_CODE;
+$('promoCode').textContent = PROMO_CODE;
+
+function load(){ try{ teams = JSON.parse(localStorage.getItem('rb_teams') || '[]'); }catch(e){} if(!teams.length) teams = [{id:uid(),name:'My team',school:'',home:'#1d3b6b',away:'#ffffff',players:[{name:'Player 1',number:''}]}]; teamId = teams[0].id; }
+function save(){ try{ localStorage.setItem('rb_teams', JSON.stringify(teams)); }catch(e){} }
+const team = () => teams.find(t => t.id === teamId) || teams[0];
+const clip = () => clips.find(c => c.id === clipId);
+const fmt = s => isFinite(s) ? Math.floor(s/60) + ':' + (s%60).toFixed(2).padStart(5,'0') : '0:00.00';
+function colorName(hex){
+  const n = parseInt(hex.slice(1),16), r=n>>16&255, g=n>>8&255, b=n&255, mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/510, d=(mx-mn)/255;
+  if(l>.88) return 'white'; if(l<.12) return 'black'; if(d<.12) return l>.6?'light gray':l>.3?'gray':'charcoal';
+  let h=mx===r?((g-b)/(mx-mn)+(g<b?6:0)):mx===g?(b-r)/(mx-mn)+2:(r-g)/(mx-mn)+4; h*=60;
+  const nm = h<15||h>=345?'red':h<40?'orange':h<65?'gold/yellow':h<165?'green':h<200?'teal':h<255?'blue':h<290?'purple':'pink';
+  return (l<.3?'dark ':l>.7?'light ':'') + nm;
+}
+
+function renderTeams(){
+  $('teamSel').innerHTML = teams.map(t => `<option value="${t.id}" ${t.id===teamId?'selected':''}>${esc(t.name||'Untitled')}</option>`).join('');
+  const t = team(); $('tName').value = t.name; $('tSchool').value = t.school; $('cHome').value = t.home; $('cAway').value = t.away;
+  renderRoster();
+}
+function renderRoster(){
+  const t = team();
+  $('roster').innerHTML = t.players.map((p,i) => `<div class="pl"><span class="badge" style="background:${t.home};color:#fff">${esc(p.number||'–')}</span><input type="text" data-i="${i}" data-f="name" value="${esc(p.name)}" aria-label="Player name"><input type="text" data-i="${i}" data-f="number" value="${esc(p.number)}" placeholder="#" aria-label="Number"><button class="btn sm ic" data-del="${i}" aria-label="Remove player">×</button></div>`).join('');
+  $('roster').querySelectorAll('input').forEach(el => el.onchange = e => { t.players[+e.target.dataset.i][e.target.dataset.f] = e.target.value; save(); renderRoster(); renderMarks(); });
+  $('roster').querySelectorAll('[data-del]').forEach(el => el.onclick = () => { t.players.splice(+el.dataset.del,1); save(); renderRoster(); });
+  $('plChips').innerHTML = t.players.map(p => `<button class="chip ${selP===p.name?'on':''}" data-p="${esc(p.name)}"><span class="sw" style="background:${t.home}"></span>${esc(p.name||'unnamed')}${p.number?' #'+esc(p.number):''}</button>`).join('');
+  $('plChips').querySelectorAll('.chip').forEach(el => el.onclick = () => { selP = el.dataset.p; renderRoster(); });
+}
+function renderChips(){
+  const mom = MOMENTS[$('rSport').value];
+  if(selM && !mom.includes(selM)) selM = '';
+  $('momChips').innerHTML = mom.map(m => `<button class="chip ${selM===m?'on':''}" data-m="${esc(m)}">${esc(m)}</button>`).join('');
+  $('momChips').querySelectorAll('.chip').forEach(el => el.onclick = () => { selM = selM===el.dataset.m ? '' : el.dataset.m; renderChips(); });
+  $('zoomChips').innerHTML = ZOOMS.map(z => `<button class="chip ${selZ===z?'on':''}" data-z="${z}">${z}</button>`).join('');
+  $('zoomChips').querySelectorAll('.chip').forEach(el => el.onclick = () => { selZ = el.dataset.z; renderChips(); });
+}
+$('rSport').onchange = renderChips;
+$('teamSel').onchange = e => { teamId = e.target.value; renderTeams(); renderMarks(); };
+$('addTeam').onclick = () => { const t = {id:uid(),name:'Team '+(teams.length+1),school:'',home:'#1d3b6b',away:'#ffffff',players:[{name:'Player 1',number:''}]}; teams.push(t); teamId = t.id; save(); renderTeams(); };
+$('addPl').onclick = () => { const t = team(); t.players.push({name:'Player '+(t.players.length+1),number:''}); save(); renderRoster(); };
+$('tName').onchange = e => { team().name = e.target.value; save(); renderTeams(); };
+$('tSchool').onchange = e => { team().school = e.target.value; save(); };
+$('cHome').onchange = e => { team().home = e.target.value; save(); renderRoster(); };
+$('cAway').onchange = e => { team().away = e.target.value; save(); };
+
+function renderClips(){
+  $('clipList').innerHTML = clips.length ? clips.map(c => `<div class="clip ${c.id===clipId?'on':''}" data-id="${c.id}"><span class="n">${esc(c.name)}</span><span class="note">${c.marks.length} mark${c.marks.length===1?'':'s'}</span><button class="btn sm ic" data-x="${c.id}" aria-label="Remove clip">×</button></div>`).join('') : '<div class="clip" style="cursor:default;color:var(--muted)">No clips yet</div>';
+  $('clipList').querySelectorAll('.clip[data-id]').forEach(el => el.onclick = e => { if(!e.target.closest('[data-x]')) pick(el.dataset.id); });
+  $('clipList').querySelectorAll('[data-x]').forEach(el => el.onclick = e => { e.stopPropagation(); const c = clips.find(x => x.id===el.dataset.x); if(c.marks.length && !confirm('Remove this clip and its marks?')) return; URL.revokeObjectURL(c.url); clips = clips.filter(x => x!==c); if(clipId===c.id){ clipId = null; v.removeAttribute('src'); v.load(); $('clipTitle').textContent = 'No clip loaded'; if(clips.length) pick(clips[0].id); } renderClips(); renderMarks(); });
+}
+function pick(id){ clipId = id; const c = clip(); v.src = c.url; $('clipTitle').textContent = c.name; pIn = pOut = null; $('pIn').textContent = $('pOut').textContent = '–'; renderClips(); renderScrub(); }
+function add(files){
+  [...files].forEach(f => { if(!f.type.startsWith('video/')) return; const id = f.name+'_'+f.size; if(clips.find(c => c.id===id)) return; clips.push({id, name:f.name.replace(/\.[^.]+$/,''), url:URL.createObjectURL(f), marks:[]}); });
+  renderClips(); if(!clipId && clips.length) pick(clips[0].id);
+}
+$('file').onchange = e => add(e.target.files);
+const drop = $('drop');
+['dragover','dragenter'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+document.addEventListener('drop', e => add(e.dataTransfer.files));
+
+function renderScrub(){
+  const c = clip(), d = v.duration;
+  $('sm').innerHTML = c && d ? c.marks.map(m => `<div class="m" style="left:${m.start/d*100}%;width:${Math.max(.4,(m.end-m.start)/d*100)}%"></div>`).join('') : '';
+}
+v.onloadedmetadata = () => { $('tcD').textContent = fmt(v.duration); renderScrub(); };
+v.ontimeupdate = () => { $('tcC').textContent = fmt(v.currentTime); const p = v.duration ? v.currentTime/v.duration*100 : 0; $('sf').style.width = p+'%'; $('sh').style.left = p+'%'; };
+const seek = e => { if(!v.duration) return; const r = $('scrub').getBoundingClientRect(); v.currentTime = Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)) * v.duration; };
+let drag = false; $('scrub').onpointerdown = e => { drag = true; seek(e); }; window.onpointermove = e => { if(drag) seek(e); }; window.onpointerup = () => drag = false;
+$('play').onclick = () => v.paused ? v.play() : v.pause();
+v.onplay = () => $('play').textContent = 'Pause'; v.onpause = () => $('play').textContent = 'Play';
+const step = d => v.currentTime = Math.max(0, v.currentTime + d/30);
+$('back').onclick = () => step(-1); $('fwd').onclick = () => step(1);
+$('speed').onchange = e => v.playbackRate = +e.target.value;
+$('setIn').onclick = () => { pIn = v.currentTime; $('pIn').textContent = fmt(pIn); };
+$('setOut').onclick = () => { pOut = v.currentTime; $('pOut').textContent = fmt(pOut); };
+$('addMark').onclick = () => {
+  const c = clip(); if(!c) return say('Load a clip first.');
+  if(pIn === null || pOut === null) return say('Set both an in and an out point.');
+  const t = team(), p = t.players.find(x => x.name === selP);
+  c.marks.push({id:uid(), start:Math.min(pIn,pOut), end:Math.max(pIn,pOut), player:selP, number:p?p.number:'', moment:selM, zoom:selZ, note:$('note').value.trim()});
+  pIn = pOut = null; $('pIn').textContent = $('pOut').textContent = '–'; $('note').value = ''; say('Mark added.');
+  renderClips(); renderMarks(); renderScrub();
+};
+const say = m => $('msg').textContent = m;
+
+function renderMarks(){
+  let n = 0, h = '';
+  clips.forEach(c => c.marks.forEach((m,i) => { n++; h += `<tr><td>${esc(c.name)}</td><td>${fmt(m.start)}</td><td>${fmt(m.end)}</td><td>${esc(m.player||'–')}${m.number?' #'+esc(m.number):''}</td><td>${esc(m.moment||'–')}</td><td>${esc(m.zoom)}</td><td>${esc(m.note)}</td><td><button class="btn sm ic" data-c="${c.id}" data-i="${i}" aria-label="Delete mark">×</button></td></tr>`; }));
+  $('mb').innerHTML = h; $('mc').textContent = n; $('mEmpty').hidden = n > 0;
+  $('mb').querySelectorAll('button').forEach(b => b.onclick = () => { clips.find(c => c.id===b.dataset.c).marks.splice(+b.dataset.i,1); renderClips(); renderMarks(); renderScrub(); });
+}
+const allMarks = () => clips.flatMap(c => c.marks.map(m => Object.assign({clip:c.name}, m))).sort((a,b) => a.clip===b.clip ? a.start-b.start : a.clip<b.clip?-1:1);
+function download(name, text, mime){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text],{type:mime})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+$('expJson').onclick = () => download('reel-bin-marks.json', JSON.stringify({teams, marks:allMarks()},null,2), 'application/json');
+$('impJson').onchange = e => { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => { try{ const d = JSON.parse(r.result); if(d.teams && d.teams.length){ teams = d.teams; teamId = teams[0].id; save(); renderTeams(); } (d.marks||[]).forEach(m => { let c = clips.find(x => x.name===m.clip); if(!c){ c = {id:m.clip,name:m.clip,url:'',marks:[]}; clips.push(c); } c.marks.push(m); }); renderClips(); renderMarks(); }catch(err){ say('Could not read that file.'); } }; r.readAsText(f); };
+
+function buildPrd(){
+  const t = team(), type = $('rType').value, sport = $('rSport').value, music = $('rMusic').value, ms = allMarks();
+  const feat = [...new Set(ms.map(m => m.player).filter(Boolean))];
+  const players = (feat.length ? t.players.filter(p => feat.includes(p.name)) : t.players).filter(p => p.name);
+  const len = type === 'Recruiting Reel' ? '45 to 90 seconds' : type === 'Mixtape' ? '60 to 180 seconds' : '20 to 60 seconds';
+  const total = ms.reduce((s,m) => s + (m.end - m.start), 0);
+  const L = [];
+  L.push(`# Video reel PRD: ${t.name}${players.length===1?' / '+players[0].name:''}`, '');
+  L.push('## 1. Goal', `- Reel type: ${type}`, `- Sport: ${sport}`, `- Target length: ${len}`, `- Raw marked footage: ${total.toFixed(1)} seconds across ${ms.length} segments`, `- Audience: ${type==='Recruiting Reel'?'college coaches and recruiters':'friends, family, and social followers'}`, '');
+  L.push('## 2. Subject', `- Team: ${t.name}${t.school?' ('+t.school+')':''}`, `- Home jersey: ${colorName(t.home)} (${t.home})`, `- Away jersey: ${colorName(t.away)} (${t.away})`);
+  players.forEach(p => L.push(`- Featured player: ${p.name}${p.number?', number '+p.number:''}. Wears ${colorName(t.home)} at home and ${colorName(t.away)} away.`));
+  L.push('');
+  L.push('## 3. Shot list', 'Use only these segments, in this order unless the style notes say otherwise.', '');
+  if(ms.length){
+    L.push('| # | Source file | In | Out | Length | Player | Moment | Framing | Note |', '|---|---|---|---|---|---|---|---|---|');
+    ms.forEach((m,i) => L.push(`| ${i+1} | ${m.clip} | ${fmt(m.start)} | ${fmt(m.end)} | ${(m.end-m.start).toFixed(1)}s | ${m.player?m.player+(m.number?' #'+m.number:''):'-'} | ${m.moment||'-'} | ${m.zoom} | ${m.note||'-'} |`));
+  } else L.push('(No segments marked yet. Add marks in the Clip Maker.)');
+  L.push('');
+  L.push('## 4. Style', `- Music: ${music}. Cut on the beat. Hits land on the biggest plays.`, '- Pacing: open with the best play, build to a second peak near the end.', '- Transitions: hard cuts and quick whip pans. No cheesy effects.', '- Slow motion: only on scoring plays and finishes.', '- Color: punchy, high contrast, true jersey colors.', `- Text: lower-third at the start with name${players[0]&&players[0].number?', number':''}, and team. Small end card with a contact line.`, '');
+  L.push('## 5. Output', '- 16:9 master and 9:16 vertical cut for social.', '- Captions off by default. Burn in the lower third only.', '');
+  L.push('## 6. Instructions for the AI editor', `- Follow the shot list exactly. Do not invent footage or add plays that are not listed.`, '- Keep the featured player in frame. Use the framing column to crop vertical cuts.', '- If a segment is under 1.5 seconds after trimming, drop it and say so.', '- Return the edit plus a list of any segments you changed.', '');
+  L.push('---', 'Want this shot and cut by a pro instead? Book Reel Bin: ' + BOOK_URL + (localStorage.getItem('rb_unlocked') ? '  (code ' + PROMO_CODE + ' for 10% off your first reel)' : ''));
+  return L.join('\n');
+}
+function unlock(){ try{ localStorage.setItem('rb_unlocked','1'); }catch(e){} $('promo').hidden = false; }
+function genPrd(copy){
+  if(!allMarks().length){ $('prdMsg').textContent = 'Add at least one mark first.'; return; }
+  unlock();
+  const txt = buildPrd(), box = $('prdBox'); box.hidden = false; box.textContent = txt;
+  if(copy){ (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => $('prdMsg').textContent = 'Copied. Paste it into your AI generator.').catch(() => $('prdMsg').textContent = 'Copy blocked. Select the text above.'); }
+  else { download((team().name||'team').replace(/\W+/g,'-').toLowerCase() + '-reel-prd.md', txt, 'text/markdown'); $('prdMsg').textContent = 'Downloaded. Paste it into your AI generator.'; }
+}
+$('genPrd').onclick = () => genPrd(false);
+$('copyPrd').onclick = () => genPrd(true);
+$('copyCode').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(PROMO_CODE); $('copyCode').textContent = 'Copied'; };
+
+$('wl').onsubmit = e => {
+  e.preventDefault(); const em = $('wlEmail').value.trim(); if(!em) return;
+  try{ const l = JSON.parse(localStorage.getItem('rb_waitlist')||'[]'); l.push({email:em,ts:Date.now()}); localStorage.setItem('rb_waitlist', JSON.stringify(l)); }catch(err){}
+  if(WAITLIST_ENDPOINT) fetch(WAITLIST_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({email:em,list:'Player App waitlist'})}).catch(()=>{});
+  $('wlMsg').textContent = 'You are on the list.'; $('wlEmail').value = '';
+};
+
+document.addEventListener('keydown', e => {
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if(e.code === 'Space'){ e.preventDefault(); $('play').click(); }
+  if(e.key==='i'||e.key==='I') $('setIn').click(); if(e.key==='o'||e.key==='O') $('setOut').click();
+  if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);
+  if(/^[1-9]$/.test(e.key)){ const p = team().players[+e.key-1]; if(p){ selP = p.name; renderRoster(); } }
+});
+
+load(); renderTeams(); renderChips(); renderClips(); renderMarks();
+if(localStorage.getItem('rb_unlocked')) $('promo').hidden = false;
+</script>
+</body>
+</html>
