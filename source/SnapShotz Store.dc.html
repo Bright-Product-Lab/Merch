@@ -79,7 +79,7 @@
     </div>
   </header>
 
-  <main style="flex:1; position:relative; z-index:1">
+  <main style="flex:1; position:relative; z-index:{{ mainZ }}">
 
     <sc-if value="{{ showCrumbs }}" hint-placeholder-val="{{ false }}">
       <nav aria-label="Breadcrumb" style="max-width:1200px; margin:0 auto; padding:14px 20px 0; display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:12px; letter-spacing:.06em; text-transform:uppercase">
@@ -132,22 +132,23 @@
 
         <section style="max-width:1200px; margin:0 auto; padding:clamp(40px,6vw,72px) 20px 0">
           <div style="margin-bottom:clamp(40px,6vw,72px)">
-            <span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Samples</span>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); border-top:2px solid var(--color-divider); border-left:2px solid var(--color-divider); margin-top:12px">
-              <sc-for list="{{ samples }}" as="v" hint-placeholder-count="2">
-                <div style="display:flex; flex-direction:column; gap:8px; padding:10px; min-width:0; border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)">
-                  <div style="background:#000; aspect-ratio:16/9"><video src="{{ v.src }}" controls="" playsinline="" preload="metadata" style="width:100%; height:100%; object-fit:cover; display:block"></video></div>
-                  <span style="font-family:var(--font-heading); font-weight:800; font-size:14px">{{ v.title }}</span>
-                </div>
-              </sc-for>
-              <sc-if value="{{ noSamples }}" hint-placeholder-val="{{ true }}">
-                <div style="display:flex; flex-direction:column; gap:8px; padding:10px; min-width:0; border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)">
-                  <div style="position:relative; aspect-ratio:16/9; background:var(--color-surface); border:1px dashed var(--color-divider); display:flex; align-items:center; justify-content:center"><span style="display:block; margin-left:6px; border-style:solid; border-width:16px 0 16px 28px; border-color:transparent transparent transparent var(--color-accent)"></span></div>
-                  <span style="font-family:var(--font-heading); font-weight:800; font-size:14px">Featured video</span>
-                  <span style="font-size:12px; color:var(--color-muted)">Placeholder. Add a video in Backend, Home page video samples.</span>
-                </div>
-              </sc-if>
+            <span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Featured</span>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); margin-top:12px; border:2px solid var(--color-divider); background:var(--color-surface)">
+              <div style="position:relative; background:#000; aspect-ratio:16/9; min-width:0">
+                <sc-if value="{{ slideIsVideo }}" hint-placeholder-val="{{ false }}"><video src="{{ slideSrc }}" controls="" playsinline="" preload="metadata" style="width:100%; height:100%; object-fit:contain; display:block"></video></sc-if>
+                <sc-if value="{{ slideIsImage }}" hint-placeholder-val="{{ false }}"><img src="{{ slideSrc }}" alt="{{ slideTitle }}" style="width:100%; height:100%; object-fit:contain; display:block"></sc-if>
+                <sc-if value="{{ noSamples }}" hint-placeholder-val="{{ true }}"><div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:1px dashed var(--color-divider); background:var(--color-surface)"><span style="display:block; margin-left:6px; border-style:solid; border-width:16px 0 16px 28px; border-color:transparent transparent transparent var(--color-accent)"></span><span style="font-size:12px; color:var(--color-muted)">Placeholder. Add slides in Backend, Branding.</span></div></sc-if>
+                <sc-if value="{{ slideMulti }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ slidePrev }}" aria-label="Previous" style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:44px; height:56px; cursor:pointer; border:0; background:rgba(4,7,14,.7); color:#fff; font-size:22px">‹</button>
+                  <button onClick="{{ slideNext }}" aria-label="Next" style="position:absolute; right:0; top:50%; transform:translateY(-50%); width:44px; height:56px; cursor:pointer; border:0; background:rgba(4,7,14,.7); color:#fff; font-size:22px">›</button>
+                </sc-if>
+              </div>
+              <sc-if value="{{ slideHasText }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; justify-content:center; gap:12px; padding:clamp(18px,3vw,36px); min-width:0">
+                <sc-if value="{{ slideTitle }}" hint-placeholder-val="{{ false }}"><h2 style="margin:0; font-family:var(--font-heading); font-weight:800; font-size:clamp(22px,3.4vw,40px); line-height:1.05; letter-spacing:-.02em">{{ slideTitle }}</h2></sc-if>
+                <sc-if value="{{ slideDesc }}" hint-placeholder-val="{{ false }}"><p style="margin:0; font-size:15px; line-height:1.55; color:var(--color-muted); white-space:pre-line">{{ slideDesc }}</p></sc-if>
+              </div></sc-if>
             </div>
+            <sc-if value="{{ slideMulti }}" hint-placeholder-val="{{ false }}"><div style="display:flex; gap:8px; margin-top:12px"><sc-for list="{{ slideDots }}" as="dt" hint-placeholder-count="3"><button onClick="{{ dt.go }}" aria-label="Slide {{ dt.n }}" style="width:28px; height:8px; padding:0; cursor:pointer; border:0; background:{{ dt.bg }}"></button></sc-for></div></sc-if>
           </div>
           <span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Videography service</span>
           <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:2px solid var(--color-divider); border-left:2px solid var(--color-divider); margin-top:12px">
@@ -155,12 +156,12 @@
           </div>
           <div style="display:flex; gap:10px; flex-wrap:nowrap; margin-top:24px"><a href="#/reels" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; color:var(--color-text); border:1px solid var(--color-divider)" style-hover="background:color-mix(in srgb, #9fc4ff 9%, transparent); color:var(--color-text)">View samples</a><a href="#/book" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; background:var(--color-accent); color:var(--on-accent)" style-hover="background:var(--color-accent-600); color:var(--on-accent)" style-active="background:var(--color-accent-700)">Start booking</a></div>
           <span style="display:block; margin-top:clamp(64px,10vw,112px); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Reel Bin app</span><div style="display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); border-top:2px solid var(--color-divider); border-left:2px solid var(--color-divider); margin-top:12px">
-            <div style="display:flex; align-items:center; padding:clamp(20px,4vw,40px); min-height:clamp(150px,34vw,260px); background:var(--color-surface); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><h2 style="margin:0; font-family:var(--font-heading); font-weight:800; font-size:clamp(34px,8.5vw,96px); line-height:.9; letter-spacing:-.04em; text-transform:uppercase">Reel Bin</h2></div>
+            <div style="position:relative; overflow:hidden; display:flex; align-items:center; padding:clamp(20px,4vw,40px); min-height:clamp(150px,34vw,260px); background:var(--color-surface); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><sc-if value="{{ reelBgHas }}" hint-placeholder-val="{{ false }}"><img aria-hidden="true" src="{{ reelBgImg }}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:{{ reelBgOp }}; pointer-events:none"></sc-if><h2 style="position:relative; margin:0; font-family:var(--font-heading); font-weight:800; font-size:clamp(34px,8.5vw,96px); line-height:.9; letter-spacing:-.04em; text-transform:uppercase">Reel Bin</h2></div>
             <div style="display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,2.5vw,18px); padding:clamp(14px,3vw,28px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">Gameday</span><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">High-end clips</span><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">Ready to post</span></div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:nowrap; margin-top:24px"><a href="#/reels" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; color:var(--color-text); border:1px solid var(--color-divider)" style-hover="background:color-mix(in srgb, #9fc4ff 9%, transparent); color:var(--color-text)">See benefits</a><a href="#/app" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; background:var(--color-accent); color:var(--on-accent)" style-hover="background:var(--color-accent-600); color:var(--on-accent)" style-active="background:var(--color-accent-700)">Try it out</a></div>
           <span style="display:block; margin-top:clamp(64px,10vw,112px); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Apps in development</span><div style="display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); border-top:2px solid var(--color-divider); border-left:2px solid var(--color-divider); margin-top:12px">
-            <div style="display:flex; align-items:center; padding:clamp(20px,4vw,40px); min-height:clamp(150px,34vw,260px); background:var(--color-surface); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><h2 style="margin:0; font-family:var(--font-heading); font-weight:800; font-size:clamp(34px,8.5vw,96px); line-height:.9; letter-spacing:-.04em; text-transform:uppercase">Player App</h2></div>
+            <div style="position:relative; overflow:hidden; display:flex; align-items:center; padding:clamp(20px,4vw,40px); min-height:clamp(150px,34vw,260px); background:var(--color-surface); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><sc-if value="{{ appBgHas }}" hint-placeholder-val="{{ false }}"><img aria-hidden="true" src="{{ appBgImg }}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:{{ appBgOp }}; pointer-events:none"></sc-if><h2 style="position:relative; margin:0; font-family:var(--font-heading); font-weight:800; font-size:clamp(34px,8.5vw,96px); line-height:.9; letter-spacing:-.04em; text-transform:uppercase">Player App</h2></div>
             <div style="display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,2.5vw,18px); padding:clamp(14px,3vw,28px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)"><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">Advanced</span><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">Recovery</span><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(13px,3.2vw,18px); line-height:1.2">Discipline</span></div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:nowrap; margin-top:24px"><a href="#/training" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; color:var(--color-text); border:1px solid var(--color-divider)" style-hover="background:color-mix(in srgb, #9fc4ff 9%, transparent); color:var(--color-text)">Demo</a><a href="#/training" style="flex:1 1 0; min-width:0; display:flex; align-items:center; min-height:52px; padding:0 16px; font-family:var(--font-heading); font-weight:800; font-size:clamp(14px,3.6vw,16px); white-space:nowrap; background:var(--color-accent); color:var(--on-accent)" style-hover="background:var(--color-accent-600); color:var(--on-accent)" style-active="background:var(--color-accent-700)">Wait list</a></div>
@@ -223,6 +224,23 @@
             <div style="padding:clamp(20px,3vw,32px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider); display:flex; flex-direction:column; gap:10px; min-width:0"><span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-accent-text)">Gameday</span><span style="font-size:15px">Shot at your game, on location or from a referral.</span></div>
             <div style="padding:clamp(20px,3vw,32px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider); display:flex; flex-direction:column; gap:10px; min-width:0"><span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-accent-text)">High-end clips</span><span style="font-size:15px">Polished footage that stands out in a feed.</span></div>
             <div style="padding:clamp(20px,3vw,32px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider); display:flex; flex-direction:column; gap:10px; min-width:0"><span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-accent-text)">Ready to post</span><span style="font-size:15px">A share-ready file, saved straight to your phone.</span></div>
+          </div>
+        </section>
+
+        <section style="max-width:1200px; margin:0 auto; padding:clamp(36px,5vw,64px) 20px; padding-bottom:0">
+          <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:14px; border-bottom:2px solid var(--color-divider); margin-bottom:0"><h2 style="margin:0; font-family:var(--font-heading); font-weight:800; letter-spacing:-.015em; font-size:clamp(28px,4vw,40px)">Examples</h2><span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Recent work</span></div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); border-left:2px solid var(--color-divider)">
+            <sc-for list="{{ samples }}" as="v" hint-placeholder-count="3">
+              <div style="display:flex; flex-direction:column; gap:8px; padding:10px; min-width:0; border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)">
+                <div style="background:#000; aspect-ratio:16/9">
+                  <sc-if value="{{ v.isVideo }}" hint-placeholder-val="{{ false }}"><video src="{{ v.src }}" controls="" playsinline="" preload="metadata" style="width:100%; height:100%; object-fit:contain; display:block"></video></sc-if>
+                  <sc-if value="{{ v.isImage }}" hint-placeholder-val="{{ false }}"><img src="{{ v.src }}" alt="{{ v.title }}" style="width:100%; height:100%; object-fit:contain; display:block"></sc-if>
+                </div>
+                <sc-if value="{{ v.title }}" hint-placeholder-val="{{ false }}"><span style="font-family:var(--font-heading); font-weight:800; font-size:15px">{{ v.title }}</span></sc-if>
+                <sc-if value="{{ v.desc }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; color:var(--color-muted); white-space:pre-line">{{ v.desc }}</span></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noSamples }}" hint-placeholder-val="{{ false }}"><div style="grid-column:1/-1; display:flex; align-items:center; gap:14px; padding:clamp(20px,3vw,32px); border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider); background:var(--color-surface)"><span style="display:block; flex:none; border-style:solid; border-width:12px 0 12px 20px; border-color:transparent transparent transparent var(--color-accent)"></span><span style="font-size:14px; color:var(--color-muted)">Example videos appear here. Add them in Backend, Branding, Home page featured slider.</span></div></sc-if>
           </div>
         </section>
 
@@ -336,7 +354,7 @@
           <div style="display:flex; flex-direction:column; border-left:2px solid var(--color-divider); margin-top:clamp(24px,4vw,40px); border-top:2px solid var(--color-divider)">
             <sc-for list="{{ clipRows }}" as="c" hint-placeholder-count="3">
               <div style="display:grid; grid-template-columns:minmax(120px,200px) minmax(0,1fr) auto; gap:clamp(12px,2vw,24px); align-items:center; padding:12px; border-right:2px solid var(--color-divider); border-bottom:2px solid var(--color-divider)">
-                <button onClick="{{ c.preview }}" aria-label="Preview" style="position:relative; display:block; padding:0; border:0; cursor:pointer; aspect-ratio:16/9; background:var(--color-surface); overflow:hidden"><img src="{{ c.thumb }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block"><img src="assets/tape-mark.png" alt="" style="position:absolute; left:50%; top:50%; width:46%; height:auto; transform:translate(-50%,-50%); opacity:.5; pointer-events:none; filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #fff)"></button>
+                <button onClick="{{ c.preview }}" aria-label="Preview" style="position:relative; display:block; padding:0; border:0; cursor:pointer; aspect-ratio:16/9; background:var(--color-surface); overflow:hidden"><img src="{{ c.thumb }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block"><div style="position:absolute; inset:0; background:url(assets/wm-tile.png) center/110px auto repeat; opacity:.3; pointer-events:none"></div><img src="assets/tape-mark.png" alt="" style="position:absolute; left:3%; bottom:5%; width:26%; height:auto; box-sizing:border-box; padding:3px 5px; background:#fff; pointer-events:none"></button>
                 <div style="display:flex; flex-direction:column; gap:4px; min-width:0"><span style="font-family:var(--font-heading); font-weight:800; font-size:clamp(16px,2.4vw,22px); letter-spacing:-.015em">{{ c.title }}</span><span style="font-size:12px; color:var(--color-muted)">{{ c.meta }}</span><span style="font-family:var(--font-heading); font-weight:800; font-size:15px; color:var(--color-accent-text)">{{ c.priceLabel }}</span></div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end">
                   <button onClick="{{ c.preview }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; cursor:pointer; border:1px solid var(--color-divider); font-family:var(--font-heading); font-weight:800; font-size:14px; white-space:nowrap; background:transparent; color:var(--color-text); ">Preview</button>
@@ -355,11 +373,11 @@
         </div></sc-if>
         <sc-if value="{{ prevOpen }}" hint-placeholder-val="{{ false }}">
           <div onClick="{{ closePrev }}" style="position:fixed; inset:0; z-index:90; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; padding:20px">
-            <div onClick="{{ stopProp }}" style="width:100%; max-width:900px; display:flex; flex-direction:column; gap:10px">
+            <div onClick="{{ stopProp }}" style="width:min(100%, calc((100vh - 120px) * 16 / 9)); display:flex; flex-direction:column; gap:10px">
               <div style="position:relative; aspect-ratio:16/9; background:#000">
                 <sc-if value="{{ prevHasVideo }}" hint-placeholder-val="{{ false }}"><video src="{{ prevSrc }}" controls="" autoplay="" playsinline="" controlsList="nodownload" onContextMenu="{{ stopProp }}" style="width:100%; height:100%; object-fit:contain; display:block"></video></sc-if>
                 <sc-if value="{{ prevNoVideo }}" hint-placeholder-val="{{ false }}"><img src="{{ prevThumb }}" alt="" style="width:100%; height:100%; object-fit:contain; display:block"></sc-if>
-                <img src="assets/tape-mark.png" alt="" style="position:absolute; left:50%; top:50%; width:30%; height:auto; transform:translate(-50%,-50%); opacity:.5; pointer-events:none; filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #fff)">
+                <div style="position:absolute; inset:0; background:url(assets/wm-tile.png) center/260px auto repeat; opacity:.3; pointer-events:none"></div><img src="assets/tape-mark.png" alt="" style="position:absolute; left:3%; bottom:5%; width:15%; height:auto; box-sizing:border-box; padding:3px 5px; background:#fff; pointer-events:none">
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; gap:10px"><span style="color:#fff; font-family:var(--font-heading); font-weight:800">{{ prevTitle }}</span><button onClick="{{ closePrev }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; cursor:pointer; border:1px solid var(--color-divider); font-family:var(--font-heading); font-weight:800; font-size:14px; white-space:nowrap; background:transparent; color:#fff; border-color:#fff">Close</button></div>
             </div>
@@ -443,6 +461,7 @@
             <div style="background:var(--color-surface); aspect-ratio:4/5">
               <img src="{{ pdImg }}" alt="{{ pdName }}" style="width:100%; height:100%; object-fit:cover; display:block">
             </div>
+            <sc-if value="{{ pdHasBack }}" hint-placeholder-val="{{ false }}"><div style="display:flex; gap:6px"><sc-for list="{{ pdSides }}" as="sd" hint-placeholder-count="2"><button onClick="{{ sd.pick }}" style="min-height:40px; padding:0 18px; cursor:pointer; font-size:14px; font-weight:600; border:1px solid {{ sd.border }}; background:{{ sd.bg }}; color:{{ sd.fg }}">{{ sd.label }}</button></sc-for></div></sc-if>
             <div style="display:flex; gap:8px; flex-wrap:wrap">
               <sc-for list="{{ pdThumbs }}" as="t" hint-placeholder-count="3">
                 <button onClick="{{ t.pick }}" style="width:68px; height:68px; padding:0; cursor:pointer; background:var(--color-surface); border:2px solid {{ t.border }}">
@@ -481,7 +500,7 @@
                 <span style="font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-muted)">Color</span>
                 <div style="display:flex; gap:6px; flex-wrap:wrap">
                   <sc-for list="{{ pdColors }}" as="c" hint-placeholder-count="3">
-                    <button onClick="{{ c.pick }}" style="min-height:44px; padding:0 16px; cursor:pointer; font-size:14px; font-weight:600; border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}">{{ c.label }}</button>
+                    <button onClick="{{ c.pick }}" style="display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 16px; cursor:pointer; font-size:14px; font-weight:600; border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.fg }}"><sc-if value="{{ c.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ c.thumb }}" alt="" style="width:30px; height:30px; object-fit:cover; display:block"></sc-if>{{ c.label }}</button>
                   </sc-for>
                 </div>
               </div>
@@ -585,7 +604,7 @@
             <div style="border:1px solid var(--line); border-radius:18px; background:var(--panel); overflow:hidden">
               <div style="display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line)">
                 <span style="font-weight:700; font-size:15px">Products</span>
-                <button onClick="{{ newProduct }}" style="padding:8px 14px; border-radius:9px; cursor:pointer; border:none; font-weight:700; font-size:13px; background:var(--acc1); color:#14101a">+ New</button>
+                <button onClick="{{ newProduct }}" style="padding:8px 14px; border-radius:9px; cursor:pointer; border:none; font-weight:700; font-size:13px; background:var(--color-accent); color:#fff">+ New</button>
               </div>
               <sc-for list="{{ adminProducts }}" as="p" hint-placeholder-count="4">
                 <div style="display:flex; align-items:center; gap:12px; padding:12px 17px; border-bottom:1px solid #211d2b; background:{{ p.rowBg }}">
@@ -636,6 +655,16 @@
                 <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--dim)">Colors (comma separated)
                   <input value="{{ ep.colors }}" onInput="{{ ef.colors }}" placeholder="Black, Cream, Team Red" style="padding:11px 13px; border-radius:10px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:14px">
                 </label>
+                <div style="display:flex; flex-direction:column; gap:10px; padding:13px; border-radius:12px; border:1px solid var(--line); background:#1b1825">
+                  <span style="font-size:12px; color:var(--dim)">Photos per color. Front shows first, back is optional. “All colors” is used when a color has no photo.</span>
+                  <sc-for list="{{ epColorRows }}" as="cr" hint-placeholder-count="2">
+                    <div style="display:grid; grid-template-columns:minmax(70px,100px) minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:start">
+                      <span style="font-size:13px; font-weight:600; padding-top:6px">{{ cr.label }}</span>
+                      <div style="display:flex; flex-direction:column; gap:6px; min-width:0"><span style="font-size:11px; color:var(--dim)">Front</span><div style="width:64px; height:64px; background:#191622; border-radius:8px; overflow:hidden"><sc-if value="{{ cr.hasFront }}" hint-placeholder-val="{{ false }}"><img src="{{ cr.front }}" alt="" style="width:100%; height:100%; object-fit:cover"></sc-if></div><input type="file" accept="image/*" onChange="{{ cr.onFront }}" style="font-size:11px; color:var(--dim); max-width:100%"><sc-if value="{{ cr.hasFront }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cr.clearFront }}" style="align-self:start; padding:4px 8px; cursor:pointer; border-radius:7px; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:11px">Remove</button></sc-if></div>
+                      <div style="display:flex; flex-direction:column; gap:6px; min-width:0"><span style="font-size:11px; color:var(--dim)">Back (optional)</span><div style="width:64px; height:64px; background:#191622; border-radius:8px; overflow:hidden"><sc-if value="{{ cr.hasBack }}" hint-placeholder-val="{{ false }}"><img src="{{ cr.back }}" alt="" style="width:100%; height:100%; object-fit:cover"></sc-if></div><input type="file" accept="image/*" onChange="{{ cr.onBack }}" style="font-size:11px; color:var(--dim); max-width:100%"><sc-if value="{{ cr.hasBack }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cr.clearBack }}" style="align-self:start; padding:4px 8px; cursor:pointer; border-radius:7px; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:11px">Remove</button></sc-if></div>
+                    </div>
+                  </sc-for>
+                </div>
                 <div style="display:flex; flex-direction:column; gap:9px; padding:13px; border-radius:12px; border:1px solid var(--line); background:#1b1825">
                   <label style="display:flex; align-items:center; gap:9px; font-size:13px">
                     <input type="checkbox" checked="{{ ep.personalize }}" onChange="{{ ef.personalize }}" style="width:17px; height:17px; accent-color:#ffb43c">Buyer can personalize
@@ -678,7 +707,7 @@
                   <input value="{{ ep.cashapp }}" onInput="{{ ef.cashapp }}" placeholder="Cash App link" style="padding:10px 12px; border-radius:9px; border:1px solid var(--line); background:#15131d; color:var(--ink); font-size:13px">
                 </div>
                 <div style="display:flex; gap:10px">
-                  <button onClick="{{ saveProduct }}" style="flex:1; padding:13px; border-radius:11px; cursor:pointer; border:none; font-weight:700; font-size:14px; background:var(--acc1); color:#14101a">Save product</button>
+                  <button onClick="{{ saveProduct }}" style="flex:1; padding:13px; border-radius:11px; cursor:pointer; border:none; font-weight:700; font-size:14px; background:var(--color-accent); color:#fff">Save product</button>
                   <button onClick="{{ cancelEdit }}" style="padding:13px 18px; border-radius:11px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:14px">Close</button>
                 </div>
               </div>
@@ -692,7 +721,7 @@
             <div style="border:1px solid var(--line); border-radius:18px; background:var(--panel); overflow:hidden">
               <div style="display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line)">
                 <span style="font-weight:700; font-size:15px">Pages</span>
-                <button onClick="{{ newPage }}" style="padding:8px 14px; border-radius:9px; cursor:pointer; border:none; font-weight:700; font-size:13px; background:var(--acc1); color:#14101a">+ New</button>
+                <button onClick="{{ newPage }}" style="padding:8px 14px; border-radius:9px; cursor:pointer; border:none; font-weight:700; font-size:13px; background:var(--color-accent); color:#fff">+ New</button>
               </div>
               <sc-for list="{{ adminPages }}" as="g" hint-placeholder-count="2">
                 <div style="display:flex; align-items:center; gap:12px; padding:13px 17px; border-bottom:1px solid #211d2b; background:{{ g.rowBg }}">
@@ -721,7 +750,7 @@
                 </div>
                 <div contentEditable="true" ref="{{ pageRef }}" onInput="{{ onPageBody }}" style="min-height:260px; padding:14px; border-radius:12px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:15px; line-height:1.7"></div>
                 <div style="display:flex; gap:10px">
-                  <button onClick="{{ savePage }}" style="flex:1; padding:13px; border-radius:11px; cursor:pointer; border:none; font-weight:700; font-size:14px; background:var(--acc1); color:#14101a">Save page</button>
+                  <button onClick="{{ savePage }}" style="flex:1; padding:13px; border-radius:11px; cursor:pointer; border:none; font-weight:700; font-size:14px; background:var(--color-accent); color:#fff">Save page</button>
                   <button onClick="{{ cancelEdit }}" style="padding:13px 18px; border-radius:11px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:14px">Close</button>
                 </div>
               </div>
@@ -732,6 +761,19 @@
         <!-- brand -->
         <sc-if value="{{ tabBrand }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:22px; align-items:start">
+            <div style="grid-column:1/-1; border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; display:flex; flex-direction:column; gap:12px">
+              <span style="font-weight:700; font-size:15px">Home page featured slider</span>
+              <span style="font-size:12px; color:var(--dim)">Videos and images, shown above Videography service. Title and description are optional.</span>
+              <div onDrop="{{ smpDrop }}" onDragOver="{{ allowDrop }}" style="padding:18px; border-radius:12px; border:1px dashed #4a4358; text-align:center; font-size:13px; color:var(--dim); display:flex; flex-direction:column; gap:8px; align-items:center"><span>Drop videos or images here, or pick files</span><input type="file" accept="video/*,image/*" multiple="" onChange="{{ onSmpFile }}" style="font-size:12px; color:var(--dim)"></div>
+              <div style="display:flex; gap:8px"><label style="flex:1; display:flex; flex-direction:column; gap:4px; min-width:0"><span style="font-size:11px; color:var(--dim)">Or paste a video or image link</span><input value="{{ smpUrl }}" onInput="{{ onSmpUrl }}" placeholder="https://…/clip.mp4" style="min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px; min-width:0"></label><button onClick="{{ addSmpUrl }}" style="align-self:end; min-height:38px; padding:0 14px; cursor:pointer; border-radius:9px; border:1px solid var(--line); background:#1d1926; color:var(--ink); font-weight:600">Add</button></div>
+              <sc-for list="{{ adminSamples }}" as="v" hint-placeholder-count="1">
+                <div style="display:grid; grid-template-columns:96px minmax(0,1fr) auto; gap:12px; align-items:start; padding:10px; border:1px solid var(--line); border-radius:12px; background:#15131d">
+                  <div style="position:relative; width:96px; aspect-ratio:16/9; background:#000; overflow:hidden"><sc-if value="{{ v.isVideo }}" hint-placeholder-val="{{ false }}"><video src="{{ v.src }}" muted="" preload="metadata" style="width:100%; height:100%; object-fit:cover"></video></sc-if><sc-if value="{{ v.isImage }}" hint-placeholder-val="{{ false }}"><img src="{{ v.src }}" alt="" style="width:100%; height:100%; object-fit:cover"></sc-if><span style="position:absolute; left:0; bottom:0; padding:1px 5px; font-size:10px; background:rgba(0,0,0,.75); color:#fff">{{ v.kind }}</span></div>
+                  <div style="display:flex; flex-direction:column; gap:6px; min-width:0"><input value="{{ v.title }}" onInput="{{ v.setTitle }}" placeholder="Title (optional)" style="min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px; min-width:0"><textarea value="{{ v.desc }}" onInput="{{ v.setDesc }}" placeholder="Description (optional)" rows="2" style="min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px; min-width:0; resize:vertical; font-family:inherit"></textarea></div>
+                  <div style="display:flex; flex-direction:column; gap:6px"><button onClick="{{ v.up }}" style="min-height:32px; padding:0 10px; cursor:pointer; border-radius:8px; border:1px solid var(--line); background:#1d1926; color:var(--ink)">↑</button><button onClick="{{ v.down }}" style="min-height:32px; padding:0 10px; cursor:pointer; border-radius:8px; border:1px solid var(--line); background:#1d1926; color:var(--ink)">↓</button><button onClick="{{ v.remove }}" style="min-height:32px; padding:0 10px; cursor:pointer; border-radius:8px; border:1px solid var(--line); background:#1d1926; color:var(--ink)">✕</button></div>
+                </div>
+              </sc-for>
+            </div>
             <div style="border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; display:flex; flex-direction:column; gap:14px">
               <span style="font-weight:700; font-size:15px">Branding</span>
               <div style="display:flex; gap:14px; align-items:center">
@@ -762,8 +804,8 @@
                 <span style="font-size:12px; color:var(--dim)">Hero copy</span>
                 <input value="{{ heroKicker }}" onInput="{{ bf.heroKicker }}" placeholder="Kicker" style="padding:10px 12px; border-radius:9px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:13px">
                 <input value="{{ heroTitle }}" onInput="{{ bf.heroTitle }}" placeholder="Headline" style="padding:10px 12px; border-radius:9px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:13px">
-                <span style="font-size:12px; color:var(--dim)">Click words to make them red</span>
-                <div style="display:flex; gap:6px; flex-wrap:wrap"><sc-for list="{{ heroChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.go }}" style="min-height:34px; padding:0 12px; cursor:pointer; border-radius:8px; border:1px solid var(--line); background:{{ c.bg }}; color:{{ c.fg }}; font-size:13px; font-weight:600">{{ c.t }}</button></sc-for></div>
+                <span style="font-size:12px; color:var(--dim)">Headline layout: click a word to make it red. Click ↵ to break the line after it.</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; padding:12px; border:1px solid var(--line); border-radius:10px; background:#15131d"><sc-for list="{{ heroChips }}" as="c" hint-placeholder-count="4"><span style="display:inline-flex"><button onClick="{{ c.go }}" style="min-height:34px; padding:0 12px; cursor:pointer; border-radius:8px 0 0 8px; border:1px solid var(--line); background:{{ c.bg }}; color:{{ c.fg }}; font-size:13px; font-weight:600">{{ c.t }}</button><button onClick="{{ c.brk }}" title="Line break after this word" style="min-height:34px; padding:0 9px; cursor:pointer; border-radius:0 8px 8px 0; border:1px solid var(--line); border-left:0; background:{{ c.brBg }}; color:{{ c.brFg }}; font-size:13px; font-weight:700">↵</button></span><sc-if value="{{ c.br }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%; height:0"></span></sc-if></sc-for></div>
                 <textarea value="{{ heroSub }}" onInput="{{ bf.heroSub }}" placeholder="Sub-headline" style="padding:10px 12px; border-radius:9px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:13px; min-height:70px; resize:vertical"></textarea>
               </div>
             </div>
@@ -798,6 +840,11 @@
                   <button onClick="{{ l.remove }}" style="padding:7px 10px; border-radius:8px; cursor:pointer; font-size:12px; border:1px solid var(--line); background:transparent; color:#c98da3">Del</button>
                 </div>
               </sc-for>
+            </div>
+          <div style="grid-column:1/-1; border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; display:flex; flex-direction:column; gap:14px">
+              <span style="font-weight:700; font-size:15px">Home banner backgrounds</span>
+              <span style="font-size:12px; color:var(--dim)">Optional image behind the “Reel Bin” and “Apps in development” banners. Lower the opacity to keep the title readable.</span>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:20px"><div style="display:flex; flex-direction:column; gap:10px; min-width:0"><span style="font-size:13px; font-weight:600">Reel Bin banner</span><div style="position:relative; aspect-ratio:16/6; background:#191622; border-radius:10px; overflow:hidden"><sc-if value="{{ reelBgHas }}" hint-placeholder-val="{{ false }}"><img src="{{ reelBgImg }}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:{{ reelBgOp }}"></sc-if></div><input type="file" accept="image/*" onChange="{{ reelBgFile }}" style="font-size:12px; color:var(--dim)"><div style="display:flex; gap:8px"><input value="{{ reelBgUrl }}" onInput="{{ reelBgSetUrl }}" placeholder="Or paste an image link" style="flex:1; min-width:0; padding:9px 11px; border-radius:9px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:13px"><sc-if value="{{ reelBgHas }}" hint-placeholder-val="{{ false }}"><button onClick="{{ reelBgClear }}" style="padding:0 12px; cursor:pointer; border-radius:9px; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:12px">Remove</button></sc-if></div><label style="display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--dim)"><span>Opacity: {{ reelBgOpLabel }}</span><input type="range" min="0" max="100" step="5" value="{{ reelBgOpVal }}" onInput="{{ reelBgSetOp }}" style="width:100%"></label></div><div style="display:flex; flex-direction:column; gap:10px; min-width:0"><span style="font-size:13px; font-weight:600">Apps in development banner</span><div style="position:relative; aspect-ratio:16/6; background:#191622; border-radius:10px; overflow:hidden"><sc-if value="{{ appBgHas }}" hint-placeholder-val="{{ false }}"><img src="{{ appBgImg }}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:{{ appBgOp }}"></sc-if></div><input type="file" accept="image/*" onChange="{{ appBgFile }}" style="font-size:12px; color:var(--dim)"><div style="display:flex; gap:8px"><input value="{{ appBgUrl }}" onInput="{{ appBgSetUrl }}" placeholder="Or paste an image link" style="flex:1; min-width:0; padding:9px 11px; border-radius:9px; border:1px solid var(--line); background:#1b1825; color:var(--ink); font-size:13px"><sc-if value="{{ appBgHas }}" hint-placeholder-val="{{ false }}"><button onClick="{{ appBgClear }}" style="padding:0 12px; cursor:pointer; border-radius:9px; border:1px solid var(--line); background:transparent; color:var(--dim); font-size:12px">Remove</button></sc-if></div><label style="display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--dim)"><span>Opacity: {{ appBgOpLabel }}</span><input type="range" min="0" max="100" step="5" value="{{ appBgOpVal }}" onInput="{{ appBgSetOp }}" style="width:100%"></label></div></div>
             </div>
           </div>
         </sc-if>
@@ -844,7 +891,7 @@
         <!-- clips -->
         <sc-if value="{{ tabClips }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex; flex-direction:column; gap:16px">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap"><span style="font-size:13px; color:var(--dim); max-width:60ch">Each gallery is one customer page with its own link and QR code. Preview files should be short, low-res and already watermarked. Full-file links stay hidden until the buyer enters your unlock code.</span><button onClick="{{ addGallery }}" style="padding:10px 16px; border-radius:10px; cursor:pointer; border:0; background:var(--acc1); color:#14101a; font-weight:700; font-size:13px">+ New gallery</button></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap"><span style="font-size:13px; color:var(--dim); max-width:60ch">Each gallery is one customer page with its own link and QR code. Preview files should be short, low-res and already watermarked. Full-file links stay hidden until the buyer enters your unlock code.</span><button onClick="{{ addGallery }}" style="padding:10px 16px; border-radius:10px; cursor:pointer; border:0; background:var(--color-accent); color:#fff; font-weight:700; font-size:13px">+ New gallery</button></div>
             <sc-for list="{{ adminGalleries }}" as="g" hint-placeholder-count="1">
               <div style="border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; display:flex; flex-direction:column; gap:14px">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:10px">
@@ -892,14 +939,7 @@
               <input value="{{ hypeSrc }}" onInput="{{ onHypeUrl }}" placeholder="Video URL" style="width:100%; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px">
               <input type="file" accept="video/*" onChange="{{ onHypeFile }}" style="font-size:12px; color:var(--dim)">
             </div>
-            <div style="border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; display:flex; flex-direction:column; gap:10px">
-              <span style="font-weight:700; font-size:14px">Home page video samples</span>
-              <sc-for list="{{ adminSamples }}" as="v" hint-placeholder-count="1">
-                <div style="display:flex; gap:8px; align-items:center"><input value="{{ v.title }}" onInput="{{ v.setTitle }}" placeholder="Title" style="flex:1; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px"><button onClick="{{ v.remove }}" style="min-height:38px; padding:0 12px; cursor:pointer; border-radius:9px; border:1px solid var(--line); background:#1d1926; color:var(--ink)">Remove</button></div>
-              </sc-for>
-              <div style="display:flex; gap:8px"><input value="{{ smpUrl }}" onInput="{{ onSmpUrl }}" placeholder="Video URL (mp4)" style="flex:1; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px"><button onClick="{{ addSmpUrl }}" style="min-height:38px; padding:0 14px; cursor:pointer; border-radius:9px; border:1px solid var(--line); background:#1d1926; color:var(--ink); font-weight:600">Add</button></div>
-              <input type="file" accept="video/*" onChange="{{ onSmpFile }}" style="font-size:12px; color:var(--dim)">
-            </div>
+            
           </div>
         </sc-if>
 
@@ -911,7 +951,7 @@
               <label style="display:flex; flex-direction:column; gap:4px"><span style="font-size:11px; color:var(--dim)">Type</span><select value="{{ cd.type }}" onChange="{{ onCdType }}" style="width:100%; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px"><option value="%">% off</option><option value="$">$ off</option></select></label>
               <label style="display:flex; flex-direction:column; gap:4px"><span style="font-size:11px; color:var(--dim)">Amount</span><input value="{{ cd.amount }}" onInput="{{ onCdAmount }}" style="width:100%; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px"></label>
               <label style="display:flex; flex-direction:column; gap:4px"><span style="font-size:11px; color:var(--dim)">Expires (YYYY-MM-DD)</span><input value="{{ cd.expires }}" onInput="{{ onCdExpires }}" style="width:100%; min-height:38px; padding:8px 11px; font-size:13px; color:var(--ink); background:#0b0a10; border:1px solid var(--line); border-radius:9px"></label>
-              <button onClick="{{ addCode }}" style="min-height:38px; border-radius:9px; cursor:pointer; font-weight:700; border:0; background:var(--acc1); color:#14101a">Add code</button>
+              <button onClick="{{ addCode }}" style="min-height:38px; border-radius:9px; cursor:pointer; font-weight:700; border:0; background:var(--color-accent); color:#fff">Add code</button>
             </div>
             <sc-for list="{{ codeRows }}" as="c" hint-placeholder-count="2">
               <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:baseline; padding:10px 0; border-top:1px solid #211d2b"><span style="font-weight:700; font-size:14px">{{ c.code }}</span><span style="font-size:13px">{{ c.desc }}</span><span style="font-size:12px; color:var(--dim)">{{ c.note }}</span><button onClick="{{ c.del }}" style="margin-left:auto; padding:5px 10px; border-radius:8px; cursor:pointer; font-size:12px; border:1px solid var(--line); background:transparent; color:#c98da3">Delete</button></div>
@@ -1273,7 +1313,7 @@ class Component extends DCLogic {
       v.muted = true; v.preload = 'auto'; v.playsInline = true; v.src = u;
       let fin = false; const done = (t, dur) => { if (fin) return; fin = true; URL.revokeObjectURL(u); res({ thumb: t, dur: dur || 0 }); };
       v.onloadedmetadata = () => { v.currentTime = Math.min(1, (v.duration || 2) / 2); };
-      v.onseeked = () => { const w = 640, h = Math.round(w * (v.videoHeight || 9) / (v.videoWidth || 16)), c = document.createElement('canvas'); c.width = w; c.height = h; try { c.getContext('2d').drawImage(v, 0, 0, w, h); done(c.toDataURL('image/jpeg', 0.72), v.duration); } catch (e) { done('', v.duration); } };
+      v.onseeked = () => { const w = 1920, h = Math.round(w * (v.videoHeight || 9) / (v.videoWidth || 16)), c = document.createElement('canvas'); c.width = w; c.height = h; try { c.getContext('2d').drawImage(v, 0, 0, w, h); done(c.toDataURL('image/jpeg', 0.86), v.duration); } catch (e) { done('', v.duration); } };
       v.onerror = () => done('', 0);
       setTimeout(() => done('', 0), 15000);
     });
@@ -1291,6 +1331,39 @@ class Component extends DCLogic {
     }
     this.mutate(o => { o.galleries[gi].clips.push(...out); }, 'Saved locally');
     this.setState({ batchMsg: 'Added ' + out.length + ' clip' + (out.length > 1 ? 's' : '') + '. Now add each full-file link and preview link.' });
+  }
+  bannerVals(d) {
+    const b = d.brand || {}, o = {};
+    ['reelBg', 'appBg'].forEach(k => {
+      const img = b[k] || '', op = b[k + 'Op'] == null ? 40 : b[k + 'Op'];
+      const set = (key, v) => this.mutate(x => { x.brand[key] = v; }, 'Saved locally');
+      Object.assign(o, { [k + 'Has']: !!img, [k + 'Img']: img, [k + 'Op']: op / 100, [k + 'OpVal']: op, [k + 'OpLabel']: op + '%',
+        [k + 'Url']: /^data:/.test(img) ? '' : img,
+        [k + 'File']: e => this.readFile(e.target.files[0], u => set(k, u)), [k + 'SetUrl']: e => set(k, e.target.value.trim()),
+        [k + 'Clear']: () => set(k, ''), [k + 'SetOp']: e => set(k + 'Op', Number(e.target.value)) });
+    });
+    return o;
+  }
+  sliderVals(s, d) {
+    const kind = v => v.type || (/^data:image|\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(v.src || '') ? 'image' : 'video');
+    const list = (d.samples || []).map(v => Object.assign({}, v, { type: kind(v) }));
+    const n = list.length, idx = n ? ((s.smpIdx || 0) % n + n) % n : 0, cur = list[idx] || {};
+    const add = (src, type) => this.mutate(o => { (o.samples = o.samples || []).push({ src, type, title: '', desc: '' }); }, 'Saved locally');
+    const files = fl => Array.from(fl || []).forEach(f => this.readFile(f, u => add(u, /^image/.test(f.type) ? 'image' : 'video')));
+    const mv = (i, k) => this.mutate(o => { const a = o.samples, j = i + k; if (j < 0 || j >= a.length) return; const t = a[i]; a[i] = a[j]; a[j] = t; }, 'Saved locally');
+    const fld = (i, k) => e => { const v = e.target.value; this.mutate(o => { o.samples[i][k] = v; }, 'Saved locally'); };
+    return {
+      noSamples: !n, slideSrc: cur.src || '', slideIsVideo: n > 0 && cur.type === 'video', slideIsImage: n > 0 && cur.type === 'image',
+      slideTitle: cur.title || '', slideDesc: cur.desc || '', slideHasText: !!(cur.title || cur.desc), slideMulti: n > 1,
+      slidePrev: () => this.setState({ smpIdx: idx - 1 }), slideNext: () => this.setState({ smpIdx: idx + 1 }),
+      slideDots: list.map((v, i) => ({ n: i + 1, bg: i === idx ? 'var(--color-accent)' : 'var(--color-divider)', go: () => this.setState({ smpIdx: i }) })),
+      samples: list,
+      adminSamples: list.map((v, i) => ({ src: v.src, isVideo: v.type === 'video', isImage: v.type === 'image', kind: v.type === 'image' ? 'Image' : 'Video', title: v.title || '', desc: v.desc || '',
+        setTitle: fld(i, 'title'), setDesc: fld(i, 'desc'), up: () => mv(i, -1), down: () => mv(i, 1), remove: () => this.mutate(o => { o.samples.splice(i, 1); }, 'Saved locally') })),
+      smpUrl: s.smpUrl || '', onSmpUrl: e => this.setState({ smpUrl: e.target.value }),
+      addSmpUrl: () => { const u = (this.state.smpUrl || '').trim(); if (u) { add(u, kind({ src: u })); this.setState({ smpUrl: '' }); } },
+      onSmpFile: e => files(e.target.files), smpDrop: e => { e.preventDefault(); files(e.dataTransfer.files); }
+    };
   }
   clipsVals(s, d, b) {
     const gals = d.galleries || [], r = s.route;
@@ -1312,7 +1385,7 @@ class Component extends DCLogic {
     const cset = (gi, ci, k) => e => { const v = e.target.value; this.mutate(o => { o.galleries[gi].clips[ci][k] = v; }, 'Saved locally'); };
     const wrong = s.clipMsg === 'bad';
     return {
-      isClips: r.view === 'clips', hasGallery: !!gal, noGallery: r.view === 'clips' && !gal,
+      mainZ: (r.view === 'clips' && s.clipPrev) ? 60 : 1, isClips: r.view === 'clips', hasGallery: !!gal, noGallery: r.view === 'clips' && !gal,
       galTitle: gal ? gal.title : '', galSub: gal ? gal.sub : '', clipRows: rows,
       hasLocked: !!gal && !unlocked && rows.some(x => x.locked),
       unlockTitle: 'Have an unlock code?', clipCode: s.clipCode || '', onClipCode: e => this.setState({ clipCode: e.target.value, clipMsg: '' }),
@@ -1409,7 +1482,7 @@ class Component extends DCLogic {
         name: x.name, role: x.role, pkgName: x.pkgName, email: x.email, mailto: 'mailto:' + x.email, phone: x.phone || '', brief: x.brief,
         when: new Date(x.ts).toLocaleString(),
         extra: ['Delivery: ' + x.delivery, x.code ? 'Code: ' + x.code : '', 'Release signed: ' + x.signed, x.onloc ? 'On location: ' + [x.date, x.venue, x.team, x.players && x.players + ' players', x.pcontact && 'Parent: ' + x.pcontact].filter(Boolean).join(' · ') : ''].filter(Boolean).join('  |  '),
-        statuses: STAT.map(l => { const o = (x.status || 'New') === l; return { label: l, bg: o ? 'var(--acc1)' : 'transparent', fg: o ? '#14101a' : 'var(--ink)', go: () => this.mutate(z => { z.bookings.find(y => y.id === x.id).status = l; }, 'Saved locally') }; }),
+        statuses: STAT.map(l => { const o = (x.status || 'New') === l; return { label: l, bg: o ? 'var(--color-accent)' : 'transparent', fg: o ? '#fff' : 'var(--ink)', go: () => this.mutate(z => { z.bookings.find(y => y.id === x.id).status = l; }, 'Saved locally') }; }),
         mkCode: () => { this.mutate(z => { z.codes = (z.codes || []).concat({ code: 'REF-' + uid().toUpperCase().slice(0, 5), type: '%', amount: '10', expires: '', note: 'Referral for ' + x.name }); }, 'Saved locally'); this.setState({ adminTab: 'codes' }); },
         del: () => { if (confirm('Delete this booking?')) this.mutate(z => { z.bookings = z.bookings.filter(y => y.id !== x.id); }, 'Saved locally'); }
       })),
@@ -1438,7 +1511,9 @@ class Component extends DCLogic {
     }, 'Saved locally');
     const bf = {};
     const heroToks = String((d.brand || {}).heroTitle || '').split(/\s+/).filter(Boolean);
-    const custom = Array.isArray((d.brand || {}).heroRed);
+    const custom = Array.isArray((d.brand || {}).heroRed), hasBr = Array.isArray((d.brand || {}).heroBreaks);
+    const isRed = (w, i) => custom ? b.heroRed.includes(i) : /^(cool|stuff)$/i.test(w);
+    const isBr = (w, i) => hasBr ? b.heroBreaks.includes(i) : (!custom && /^(make|stuff)$/i.test(w));
     ['name','tagline','announce','email','formspree','heroKicker','heroTitle','heroSub'].forEach(k => {
       bf[k] = e => set('brand.' + k, e.target.value);
     });
@@ -1465,6 +1540,7 @@ class Component extends DCLogic {
     const sizes = pd ? (pd.sizes || []) : [], colors = pd ? (pd.colors || []) : [];
     const chosenSize = s.size || sizes[0] || '';
     const chosenColor = s.color || colors[0] || '';
+    const pdCi = pd ? Object.assign({}, (pd.colorImages || {})['*'] || {}, Object.fromEntries(Object.entries((pd.colorImages || {})[chosenColor] || {}).filter(([k, v]) => v))) : {};
     const soldOut = pd && /sold out|coming soon/i.test(pd.badge || '');
     const note = pd ? [pd.name, chosenSize, chosenColor, s.custom].filter(Boolean).join(' · ') : '';
     const buys = [];
@@ -1508,8 +1584,10 @@ class Component extends DCLogic {
       announce: b.announce, showAnnounce: false, formspree: b.formspree,
       acc1: b.acc1, acc2: b.acc2, acc3: b.acc3,
       heroKicker: b.heroKicker, heroTitle: b.heroTitle, heroSub: b.heroSub,
-      heroWords: heroToks.map((w, i) => ({ br: custom ? false : /^(make|stuff)$/i.test(w), t: w, delay: (0.25 + i * 0.12).toFixed(2) + 's', color: (custom ? b.heroRed.includes(i) : /^(cool|stuff)$/i.test(w)) ? 'var(--color-accent)' : 'var(--color-text)' })),
-      heroChips: heroToks.map((w, i) => { const on = custom ? b.heroRed.includes(i) : /^(cool|stuff)$/i.test(w); return { t: w, bg: on ? '#ec3013' : 'transparent', fg: on ? '#fff' : 'var(--ink)', go: () => { const cur = custom ? b.heroRed : heroToks.map((x, j) => /^(cool|stuff)$/i.test(x) ? j : -1).filter(j => j >= 0); set('brand.heroRed', on ? cur.filter(j => j !== i) : cur.concat(i)); } }; }),
+      heroWords: heroToks.map((w, i) => ({ br: isBr(w, i), t: w, delay: (0.25 + i * 0.12).toFixed(2) + 's', color: isRed(w, i) ? 'var(--color-accent)' : 'var(--color-text)' })),
+      heroChips: heroToks.map((w, i) => { const on = isRed(w, i), bo = isBr(w, i); return { t: w, br: bo, bg: on ? '#ec3013' : 'transparent', fg: on ? '#fff' : 'var(--ink)', brBg: bo ? 'var(--ink)' : 'transparent', brFg: bo ? '#14101a' : 'var(--dim)',
+        go: () => { const cur = heroToks.map((x, j) => isRed(x, j) ? j : -1).filter(j => j >= 0); set('brand.heroRed', on ? cur.filter(j => j !== i) : cur.concat(i)); },
+        brk: () => { const cur = heroToks.map((x, j) => isBr(x, j) ? j : -1).filter(j => j >= 0); set('brand.heroBreaks', bo ? cur.filter(j => j !== i) : cur.concat(i)); } }; }),
       year: new Date().getFullYear(), mailtoHref: 'mailto:' + b.email,
       socialLinks: Object.keys(b.social).filter(k => b.social[k]).map(k => ({
         label: k.charAt(0).toUpperCase() + k.slice(1), href: b.social[k]
@@ -1531,7 +1609,7 @@ class Component extends DCLogic {
       hasFeatured: !!feat,
       featuredName: feat ? feat.name : '', featuredPrice: feat ? money(feat.price) : '',
       featuredImg: feat ? this.img(feat, 0) : '', featuredHref: feat ? '#/product/' + slugify(feat.name) : '#/shop',
-      homeProducts: d.products.filter(p => p.category !== 'Video packages').sort((a, b) => ((b.images||[]).length > 0) - ((a.images||[]).length > 0)).slice(0, 5).map(card).concat(((d.lookbook && d.lookbook.merch) || []).slice(0, 3).map((l, i) => ({ name: l.caption || 'Merch', price: '', img: l.img, href: '#/merch' }))).slice(0, 5),
+      homeProducts: d.products.filter(p => p.category !== 'Video packages').sort((a, b) => ((b.images||[]).length > 0) - ((a.images||[]).length > 0)).slice(0, 2).map(card).concat(((d.lookbook && d.lookbook.merch) || []).slice(0, 2).map((l, i) => ({ name: l.caption || 'Merch', price: '', img: l.img, href: '#/merch' }))).slice(0, 2),
       videoCoverImg: (d.products.find(p => p.category === 'Video packages' && (p.images||[]).length) || {images:[]}).images[0] || placeholder('video-cover', 'Game highlight reel'),
       gridShots: (d.lookbook.gameday.length ? d.lookbook.gameday : d.lookbook.merch).slice(0, 6).length
         ? (d.lookbook.gameday.length ? d.lookbook.gameday : d.lookbook.merch).slice(0, 6)
@@ -1552,13 +1630,15 @@ class Component extends DCLogic {
       // product
       pdName: pd ? pd.name : '', pdCategory: pd ? pd.category : '', pdPrice: pd ? money(pd.price) : '',
       pdDescHtml: pd ? { __html: pd.desc || '' } : { __html: '' },
-      pdImg: pd ? this.img(pd, s.imgIdx) : '', pdVideo: pd ? (pd.video || '') : '',
+      pdImg: pd ? (s.side === 'back' && pdCi.back ? pdCi.back : (!s.thumbPicked && pdCi.front ? pdCi.front : this.img(pd, s.imgIdx))) : '',
+      pdHasBack: !!pdCi.back, pdSides: ['front', 'back'].map(k => Object.assign({ label: k === 'front' ? 'Front' : 'Back', pick: () => this.setState({ side: k }) }, sfPill((s.side || 'front') === k))),
+      pdVideo: pd ? (pd.video || '') : '',
       pdThumbs: pd && (pd.images || []).length > 1 ? pd.images.map((im, i) => ({
-        img: im, border: i === s.imgIdx ? 'var(--color-accent)' : 'transparent', pick: () => this.setState({ imgIdx: i })
+        img: im, border: i === s.imgIdx && s.thumbPicked ? 'var(--color-accent)' : 'transparent', pick: () => this.setState({ imgIdx: i, thumbPicked: true, side: 'front' })
       })) : [],
       pdHasSizes: sizes.length > 0, pdHasColors: colors.length > 0,
       pdSizes: sizes.map(x => Object.assign({ label: x, pick: () => this.setState({ size: x }) }, sfPill(x === chosenSize))),
-      pdColors: colors.map(x => Object.assign({ label: x, pick: () => this.setState({ color: x }) }, sfPill(x === chosenColor))),
+      pdColors: colors.map(x => { const ci = (pd.colorImages || {})[x] || {}; return Object.assign({ label: x, hasThumb: !!ci.front, thumb: ci.front || '', pick: () => this.setState({ color: x, side: 'front', thumbPicked: false }) }, sfPill(x === chosenColor)); }),
       pdPersonalize: !!(pd && pd.personalize), pdPersonalizeLabel: pd ? (pd.personalizeLabel || 'Personalization') : '',
       custom: s.custom, onCustom: e => this.setState({ custom: e.target.value }),
       pdBuys: buys, pdSoldOut: !!soldOut,
@@ -1634,6 +1714,8 @@ class Component extends DCLogic {
         featured: e => this.setState({ editProduct: Object.assign({}, this.state.editProduct, { featured: e.target.checked }) }),
         personalize: e => this.setState({ editProduct: Object.assign({}, this.state.editProduct, { personalize: e.target.checked }) })
       }),
+      epColorRows: ep ? ['*'].concat(String(ep.colors || '').split(',').map(x => x.trim()).filter(Boolean)).map(nm => { const ci = (ep.colorImages || {})[nm] || {}; const setI = (side, u) => { const cur = this.state.editProduct; const all = Object.assign({}, cur.colorImages || {}); all[nm] = Object.assign({}, all[nm] || {}, { [side]: u }); this.setState({ editProduct: Object.assign({}, cur, { colorImages: all }) }); };
+        return { label: nm === '*' ? 'All colors' : nm, front: ci.front || '', back: ci.back || '', hasFront: !!ci.front, hasBack: !!ci.back, onFront: e => this.readFile(e.target.files[0], u => setI('front', u)), onBack: e => this.readFile(e.target.files[0], u => setI('back', u)), clearFront: () => setI('front', ''), clearBack: () => setI('back', '') }; }) : [],
       epImages: ep ? (ep.images || []).map((im, i) => ({
         img: im, remove: () => this.setState({ editProduct: Object.assign({}, this.state.editProduct, { images: this.state.editProduct.images.filter((_, j) => j !== i) }) })
       })) : [],
@@ -1665,7 +1747,7 @@ class Component extends DCLogic {
           sizes: String(cur.sizes || '').split(',').map(x => x.trim()).filter(Boolean),
           colors: String(cur.colors || '').split(',').map(x => x.trim()).filter(Boolean),
           personalize: !!cur.personalize, personalizeLabel: cur.personalizeLabel || '',
-          desc: html, images: cur.images || [], video: cur.video || '',
+          desc: html, images: cur.images || [], video: cur.video || '', colorImages: cur.colorImages || {},
           gumroad: cur.gumroad || '', paypal: cur.paypal || '', cashapp: cur.cashapp || ''
         };
         this.mutate(o => {
@@ -1752,6 +1834,8 @@ class Component extends DCLogic {
 
       ...this.extra(s, d, b, set),
       ...this.clipsVals(s, d, b),
+      ...this.sliderVals(s, d),
+      ...this.bannerVals(d),
       cfOpen: !!s.cfOpen, cfClosed: !s.cfOpen, cfToggle: () => this.setState({ cfOpen: !this.state.cfOpen }), cfClose: () => this.setState({ cfOpen: false }), cfToggleLabel: s.cfOpen ? 'Collapse form' : 'Expand form',
       cfBox: s.cfOpen ? 'position:fixed; inset:clamp(12px,3vw,40px); z-index:100; display:flex; flex-direction:column; gap:14px; padding:clamp(18px,3vw,40px); overflow:auto; background:var(--color-bg); border:2px solid var(--color-divider)' : 'display:flex; flex-direction:column; gap:10px',
 
